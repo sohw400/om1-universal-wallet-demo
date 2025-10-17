@@ -10,20 +10,26 @@ Demo application for OM1's Universal Wallet implementation - supports 300+ crypt
 
 ## Quick Start
 
-1. **Install dependencies**
+1. **Clone repository**
 
 ```bash
-cd wallet-demo
+git clone https://github.com/sohw400/om1-universal-wallet-demo
+cd om1-universal-wallet-demo/wallet-demo
+```
+
+2. **Install dependencies**
+
+```bash
 npm install
 ```
 
-2. **Run the demo**
+3. **Run the demo**
 
 ```bash
 npm run dev
 ```
 
-3. **Open browser**
+4. **Open browser**
 
 Navigate to `http://localhost:3000`
 
@@ -46,7 +52,7 @@ Navigate to `http://localhost:3000`
 
 This demo is part of the OM1 Universal Wallet implementation:
 
-- **PR**: https://github.com/OpenMind/OM1/pull/463
+- **PR**: https://github.com/OpenMind/OM1/pull/465
 - **Docs**: https://github.com/OpenMind/OM1/blob/feat/universal-wallet-support/docs/UNIVERSAL_WALLET.md
 
 ## Implementation Details
