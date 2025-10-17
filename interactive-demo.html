@@ -332,8 +332,23 @@
         let currentChainId;
 
         async function connectWallet() {
+            // Wait a bit for MetaMask to inject
+            await new Promise(resolve => setTimeout(resolve, 100));
+
             if (typeof window.ethereum === 'undefined') {
-                alert('Please install MetaMask or another Web3 wallet to use this demo.\n\nVisit: https://metamask.io');
+                const notConnectedDiv = document.getElementById('not-connected');
+                notConnectedDiv.innerHTML = `
+                    <div class="info-box">
+                        <strong>⚠️ No Web3 Wallet Detected</strong><br><br>
+                        Please install MetaMask or another Web3 wallet to use this demo.<br><br>
+                        <a href="https://metamask.io" target="_blank" style="color: #667eea; font-weight: 600;">
+                            Install MetaMask →
+                        </a>
+                    </div>
+                    <button class="button button-primary" onclick="location.reload()">
+                        🔄 Retry Connection
+                    </button>
+                `;
                 return;
             }
 
@@ -342,6 +357,7 @@
                     <div class="loading">
                         <div class="spinner"></div>
                         <p>Connecting to wallet...</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">Please check your wallet extension</p>
                     </div>
                 `;
 
@@ -575,6 +591,20 @@
         function handleChainChanged(chainId) {
             window.location.reload();
         }
+
+        // Check for wallet on page load
+        window.addEventListener('load', function() {
+            console.log('Checking for Web3 wallet...');
+            console.log('window.ethereum:', typeof window.ethereum);
+            console.log('window.web3:', typeof window.web3);
+
+            if (typeof window.ethereum !== 'undefined') {
+                console.log('✅ Wallet detected!');
+                console.log('Provider:', window.ethereum.isMetaMask ? 'MetaMask' : 'Other');
+            } else {
+                console.log('❌ No wallet detected');
+            }
+        });
     </script>
 </body>
 </html>
