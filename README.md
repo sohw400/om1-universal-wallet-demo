@@ -11,28 +11,46 @@ This repository demonstrates the Universal Wallet functionality of OM1, showcasi
 
 ## Quick Start
 
-### Installation
+### Interactive Demo (Recommended) ⭐
 
+**Real wallet connections - MetaMask, WalletConnect, 300+ wallets**
+
+1. Clone and navigate:
 ```bash
-# Clone the demo repository
-git clone https://github.com/yourusername/om1-universal-wallet-demo
+git clone https://github.com/sohw400/om1-universal-wallet-demo
 cd om1-universal-wallet-demo
-
-# Install dependencies
-pip install -r requirements.txt
 ```
 
-### Running the Demo
+2. Start the server:
+```bash
+npm start
+```
 
-**Option 1: Web UI Demo**
+3. Open http://localhost:3000 in your browser with MetaMask installed
+
+4. Click "Connect Wallet" to interact with real wallets!
+
+**What you can do:**
+- Connect any Web3 wallet (MetaMask, WalletConnect, etc.)
+- Sign messages with cryptographic proof
+- Send real transactions
+- Switch between networks
+- Works on Mainnet, Sepolia, Polygon, etc.
+
+### Alternative Options
+
+**Option 1: HTML Demo (No Server)**
+
+Just open `interactive-demo.html` or `demo.html` in your browser
+
+**Option 2: Python Web Demo**
 
 ```bash
+pip install -r requirements.txt
 python web_demo.py
 ```
 
-Then open http://localhost:8000 in your browser.
-
-**Option 2: Command Line Demo**
+**Option 3: Command Line Demo**
 
 ```bash
 # With a real wallet address

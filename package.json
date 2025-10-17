@@ -1,0 +1,19 @@
+{
+  "name": "om1-universal-wallet-demo",
+  "version": "1.0.0",
+  "description": "Demo repository for OM1 Universal Wallet - Support for 300+ cryptocurrency wallets",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "om1",
+    "wallet",
+    "web3",
+    "ethereum",
+    "metamask"
+  ],
+  "author": "",
+  "license": "MIT"
+}
