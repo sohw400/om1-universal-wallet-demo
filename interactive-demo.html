@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OM1 Universal Wallet - Live Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .success-box {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #28a745;
+        }
+
+        .button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-secondary {
+            background: #28a745;
+            color: white;
+        }
+
+        .button-secondary:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .button-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .wallet-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .wallet-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #333;
+            font-family: monospace;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .chain-name {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            color: #333;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .transaction-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tx-hash {
+            word-break: break-all;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .network-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 OM1 Universal Wallet - Live Demo</h1>
+            <p class="subtitle">Real Wallet Connection • 300+ Wallets Supported</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>⚡ Live Demo:</strong> This demo connects to real wallets (MetaMask, WalletConnect, etc.)
+                on Ethereum networks. You can sign transactions and check real balances.
+            </div>
+
+            <div id="not-connected">
+                <h2 style="margin-bottom: 20px;">Connect Your Wallet</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Click the button below to connect using MetaMask, WalletConnect, Coinbase Wallet,
+                    or any of 300+ supported wallets.
+                </p>
+                <button class="button button-primary" onclick="connectWallet()">
+                    🦊 Connect Wallet
+                </button>
+            </div>
+
+            <div id="connected" style="display: none;">
+                <div class="success-box">
+                    ✅ Wallet Connected Successfully
+                </div>
+
+                <div class="wallet-info">
+                    <h3>Wallet Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Address:</span>
+                        <span class="info-value" id="wallet-address">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Network:</span>
+                        <span class="info-value" id="network-name">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Balance:</span>
+                        <span class="info-value" id="wallet-balance">-</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Available Actions</h3>
+
+                <button class="button button-secondary" onclick="signMessage()">
+                    ✍️ Sign Message
+                </button>
+
+                <button class="button button-secondary" onclick="showSendForm()">
+                    💸 Send Transaction
+                </button>
+
+                <button class="button button-secondary" onclick="switchNetwork()">
+                    🔄 Switch Network
+                </button>
+
+                <button class="button button-danger" onclick="disconnectWallet()">
+                    🚪 Disconnect
+                </button>
+
+                <div id="send-form" class="transaction-form" style="display: none;">
+                    <h3 style="margin-bottom: 15px;">Send Transaction</h3>
+                    <div class="form-group">
+                        <label>Recipient Address:</label>
+                        <input type="text" id="recipient" placeholder="0x...">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (ETH):</label>
+                        <input type="number" id="amount" placeholder="0.001" step="0.001" value="0.001">
+                    </div>
+                    <button class="button button-primary" onclick="sendTransaction()">
+                        Send ETH
+                    </button>
+                    <button class="button" style="background: #6c757d; color: white;" onclick="hideSendForm()">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="results" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script>
+        let web3;
+        let currentAccount;
+        let currentChainId;
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask or another Web3 wallet to use this demo.\n\nVisit: https://metamask.io');
+                return;
+            }
+
+            try {
+                document.getElementById('not-connected').innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Connecting to wallet...</p>
+                    </div>
+                `;
+
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+
+                currentAccount = accounts[0];
+                web3 = new Web3(window.ethereum);
+
+                currentChainId = await web3.eth.getChainId();
+
+                document.getElementById('not-connected').style.display = 'none';
+                document.getElementById('connected').style.display = 'block';
+
+                await updateWalletInfo();
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', handleChainChanged);
+
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet: ' + error.message);
+                document.getElementById('not-connected').innerHTML = `
+                    <h2 style="margin-bottom: 20px;">Connect Your Wallet</h2>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Click the button below to connect using MetaMask, WalletConnect, Coinbase Wallet,
+                        or any of 300+ supported wallets.
+                    </p>
+                    <button class="button button-primary" onclick="connectWallet()">
+                        🦊 Connect Wallet
+                    </button>
+                `;
+            }
+        }
+
+        async function updateWalletInfo() {
+            document.getElementById('wallet-address').textContent =
+                currentAccount.substring(0, 6) + '...' + currentAccount.substring(38);
+
+            const networkNames = {
+                1: 'Ethereum Mainnet',
+                5: 'Goerli Testnet',
+                11155111: 'Sepolia Testnet',
+                137: 'Polygon',
+                80001: 'Mumbai Testnet'
+            };
+
+            const networkName = networkNames[Number(currentChainId)] || `Chain ID: ${currentChainId}`;
+            document.getElementById('network-name').textContent = networkName;
+
+            const balance = await web3.eth.getBalance(currentAccount);
+            const balanceEth = web3.utils.fromWei(balance, 'ether');
+            document.getElementById('wallet-balance').textContent =
+                parseFloat(balanceEth).toFixed(4) + ' ETH';
+        }
+
+        async function signMessage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Waiting for signature...</p>
+                </div>
+            `;
+
+            try {
+                const message = 'Hello from OM1 Universal Wallet!\n\nThis signature proves you control this wallet address.';
+
+                const signature = await web3.eth.personal.sign(message, currentAccount);
+
+                resultsDiv.innerHTML = `
+                    <div class="success-box">
+                        <strong>✅ Message Signed Successfully</strong>
+                    </div>
+                    <div class="wallet-info">
+                        <h3>Signature Details</h3>
+                        <div class="info-row">
+                            <span class="info-label">Message:</span>
+                            <span class="info-value">${message.split('\n')[0]}...</span>
+                        </div>
+                        <div class="info-row" style="flex-direction: column; align-items: flex-start;">
+                            <span class="info-label">Signature:</span>
+                            <div class="tx-hash">${signature}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error signing message:', error);
+                resultsDiv.innerHTML = `
+                    <div class="info-box">
+                        <strong>❌ Signature Cancelled</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function showSendForm() {
+            document.getElementById('send-form').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function hideSendForm() {
+            document.getElementById('send-form').style.display = 'none';
+        }
+
+        async function sendTransaction() {
+            const recipient = document.getElementById('recipient').value;
+            const amount = document.getElementById('amount').value;
+
+            if (!recipient || !amount) {
+                alert('Please enter recipient address and amount');
+                return;
+            }
+
+            if (!web3.utils.isAddress(recipient)) {
+                alert('Invalid recipient address');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Sending transaction...</p>
+                </div>
+            `;
+
+            try {
+                const amountWei = web3.utils.toWei(amount, 'ether');
+
+                const tx = await web3.eth.sendTransaction({
+                    from: currentAccount,
+                    to: recipient,
+                    value: amountWei
+                });
+
+                resultsDiv.innerHTML = `
+                    <div class="success-box">
+                        <strong>✅ Transaction Sent Successfully</strong>
+                    </div>
+                    <div class="wallet-info">
+                        <h3>Transaction Details</h3>
+                        <div class="info-row">
+                            <span class="info-label">Amount:</span>
+                            <span class="info-value">${amount} ETH</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">To:</span>
+                            <span class="info-value">${recipient.substring(0, 10)}...</span>
+                        </div>
+                        <div class="info-row" style="flex-direction: column; align-items: flex-start;">
+                            <span class="info-label">Transaction Hash:</span>
+                            <div class="tx-hash">${tx.transactionHash}</div>
+                        </div>
+                    </div>
+                `;
+
+                hideSendForm();
+                await updateWalletInfo();
+
+            } catch (error) {
+                console.error('Error sending transaction:', error);
+                resultsDiv.innerHTML = `
+                    <div class="info-box">
+                        <strong>❌ Transaction Failed</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function switchNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x89' }], // Polygon
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x89',
+                                chainName: 'Polygon Mainnet',
+                                nativeCurrency: {
+                                    name: 'MATIC',
+                                    symbol: 'MATIC',
+                                    decimals: 18
+                                },
+                                rpcUrls: ['https://polygon-rpc.com/'],
+                                blockExplorerUrls: ['https://polygonscan.com/']
+                            }]
+                        });
+                    } catch (addError) {
+                        console.error('Error adding network:', addError);
+                    }
+                }
+            }
+        }
+
+        function disconnectWallet() {
+            currentAccount = null;
+            web3 = null;
+            document.getElementById('connected').style.display = 'none';
+            document.getElementById('not-connected').style.display = 'block';
+            document.getElementById('not-connected').innerHTML = `
+                <h2 style="margin-bottom: 20px;">Connect Your Wallet</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Click the button below to connect using MetaMask, WalletConnect, Coinbase Wallet,
+                    or any of 300+ supported wallets.
+                </p>
+                <button class="button button-primary" onclick="connectWallet()">
+                    🦊 Connect Wallet
+                </button>
+            `;
+        }
+
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                disconnectWallet();
+            } else {
+                currentAccount = accounts[0];
+                updateWalletInfo();
+            }
+        }
+
+        function handleChainChanged(chainId) {
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
