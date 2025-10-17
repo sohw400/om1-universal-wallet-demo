@@ -76,11 +76,11 @@
 <body>
     <div class="container">
         <h1>OM1 Universal Wallet Demo</h1>
-        <p class="subtitle">Support for 300+ wallets via Web3 standard</p>
+        <p class="subtitle">Support for 300+ wallets via WalletConnect</p>
 
         <div id="not-connected">
             <div class="info">
-                Works with any Web3 wallet: MetaMask, Coinbase Wallet, Trust Wallet, Rainbow, and 300+ more
+                Click below to see 300+ wallet options including MetaMask, Coinbase, Trust Wallet, Rainbow, Ledger, and more
             </div>
 
             <div class="wallets">
@@ -88,11 +88,11 @@
                 <div class="wallet-item">Coinbase</div>
                 <div class="wallet-item">Trust Wallet</div>
                 <div class="wallet-item">Rainbow</div>
-                <div class="wallet-item">Phantom</div>
+                <div class="wallet-item">Ledger</div>
                 <div class="wallet-item">+295 more</div>
             </div>
 
-            <button onclick="connect()">Connect Wallet</button>
+            <button onclick="openModal()">Connect Wallet (300+ options)</button>
         </div>
 
         <div id="connected">
@@ -112,81 +112,97 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script>
-        let provider, signer, address;
+    <script type="module">
+        import { createWeb3Modal, defaultConfig } from 'https://cdn.jsdelivr.net/npm/@web3modal/ethers5@latest/+esm'
 
-        async function connect() {
-            if (!window.ethereum) {
-                alert('Install MetaMask or any Web3 wallet');
-                return;
-            }
+        const projectId = 'c0d43d2323c1dc2a19e68ba2af6be044'
 
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                address = await signer.getAddress();
-
-                const network = await provider.getNetwork();
-                const balance = await provider.getBalance(address);
-
-                document.getElementById('address').textContent =
-                    address.slice(0, 6) + '...' + address.slice(-4);
-                document.getElementById('network').textContent =
-                    network.name || 'Chain ' + network.chainId;
-                document.getElementById('balance').textContent =
-                    ethers.utils.formatEther(balance).slice(0, 6) + ' ETH';
-
-                document.getElementById('not-connected').style.display = 'none';
-                document.getElementById('connected').style.display = 'block';
-            } catch (err) {
-                alert('Connection failed: ' + err.message);
-            }
+        const mainnet = {
+            chainId: 1,
+            name: 'Ethereum',
+            currency: 'ETH',
+            explorerUrl: 'https://etherscan.io',
+            rpcUrl: 'https://cloudflare-eth.com'
         }
 
-        async function sign() {
+        const polygon = {
+            chainId: 137,
+            name: 'Polygon',
+            currency: 'MATIC',
+            explorerUrl: 'https://polygonscan.com',
+            rpcUrl: 'https://polygon-rpc.com'
+        }
+
+        const metadata = {
+            name: 'OM1 Universal Wallet',
+            description: 'Universal wallet support for 300+ wallets',
+            url: 'http://localhost:3000',
+            icons: ['https://avatars.githubusercontent.com/u/37784886']
+        }
+
+        const modal = createWeb3Modal({
+            ethersConfig: defaultConfig({ metadata }),
+            chains: [mainnet, polygon],
+            projectId,
+            enableAnalytics: false
+        })
+
+        let provider, signer, address;
+
+        window.openModal = async function() {
+            await modal.open()
+        }
+
+        modal.subscribeProvider(async (state) => {
+            if (state.isConnected) {
+                const ethersProvider = state.provider
+                provider = new ethers.providers.Web3Provider(ethersProvider)
+                signer = provider.getSigner()
+                address = await signer.getAddress()
+
+                const network = await provider.getNetwork()
+                const balance = await provider.getBalance(address)
+
+                document.getElementById('address').textContent =
+                    address.slice(0, 6) + '...' + address.slice(-4)
+                document.getElementById('network').textContent =
+                    network.name || 'Chain ' + network.chainId
+                document.getElementById('balance').textContent =
+                    ethers.utils.formatEther(balance).slice(0, 6) + ' ETH'
+
+                document.getElementById('not-connected').style.display = 'none'
+                document.getElementById('connected').style.display = 'block'
+            }
+        })
+
+        window.sign = async function() {
             try {
-                const message = 'Test message from OM1 Universal Wallet';
-                const signature = await signer.signMessage(message);
+                const message = 'Test message from OM1 Universal Wallet'
+                const signature = await signer.signMessage(message)
 
                 document.getElementById('result').innerHTML =
                     '<strong>Signed successfully</strong><br>' +
                     'Message: ' + message + '<br>' +
-                    'Signature: ' + signature.slice(0, 20) + '...';
+                    'Signature: ' + signature.slice(0, 20) + '...'
             } catch (err) {
-                alert('Sign failed: ' + err.message);
+                alert('Sign failed: ' + err.message)
             }
         }
 
-        async function switchNet() {
+        window.switchNet = async function() {
             try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x89' }]
-                });
-                alert('Switched to Polygon');
+                await modal.switchNetwork(137)
+                alert('Switched to Polygon')
             } catch (err) {
-                if (err.code === 4902) {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: '0x89',
-                            chainName: 'Polygon',
-                            rpcUrls: ['https://polygon-rpc.com'],
-                            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 }
-                        }]
-                    });
-                }
+                alert('Switch failed: ' + err.message)
             }
         }
 
-        function disconnect() {
-            location.reload();
+        window.disconnect = async function() {
+            await modal.disconnect()
+            location.reload()
         }
-
-        window.ethereum?.on('accountsChanged', () => location.reload());
-        window.ethereum?.on('chainChanged', () => location.reload());
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </body>
 </html>
